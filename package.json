@@ -6,5 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diederik789/node-omx-interface.git"
+  },
+  "keywords": [
+    "Omxplayer",
+    "Raspberry",
+    "Py"
+  ],
   "author": "Diederik Feilzer <diederikfeilzer@gmail.com>"
 }
