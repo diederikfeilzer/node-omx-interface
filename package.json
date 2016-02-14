@@ -1,0 +1,10 @@
+{
+  "name": "omx-interface",
+  "version": "1.0.0",
+  "description": "An interface to the omxplayer through dbus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Diederik Feilzer <diederikfeilzer@gmail.com>"
+}
