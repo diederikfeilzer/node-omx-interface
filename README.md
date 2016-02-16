@@ -8,17 +8,20 @@ omx.open('test.h624',{audioOutput:'hdmi',blackBackground:true,disableKeys:true,d
 
 # options
 ## general options
-audioOutput:             'hdmi' | 'local' | 'both'  \
+audioOutput:             'hdmi' | 'local' | 'both'
+
 blackBackground:         false | true | default: true
 
 ## communication options (since dbus replaces these features)
 
 disableKeys:             false | true | default: false
+
 disableOnScreenDisplay:  false | true | default: false
 
 ## subtitle options
 
 disableGhostbox:         false | true | default: false
+
 subtitlePath:            default: ""
 
 # properties
@@ -27,6 +30,7 @@ omx.getCurrentDuration();
 
 ## Get position of current track/movie in seconds
 omx.getCurrentPosition();
+
 This function can be called many times per second without bothering the dbus since the position is extrapolated from last paying status.
 
 ## Get volume in mili db
