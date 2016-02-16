@@ -8,7 +8,7 @@ omx.open('test.h624',{audioOutput:'hdmi',blackBackground:true,disableKeys:true,d
 
 # options
 ## general options
-audioOutput:             'hdmi' | 'local' | 'both'
+audioOutput:             'hdmi' | 'local' | 'both'  \
 blackBackground:         false | true | default: true
 
 ## communication options (since dbus replaces these features)
