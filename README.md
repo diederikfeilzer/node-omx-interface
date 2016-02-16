@@ -31,7 +31,7 @@ omx.getCurrentDuration();
 ## Get position of current track/movie in seconds
 omx.getCurrentPosition();
 
-This function can be called many times per second without bothering the dbus since the position is extrapolated from last paying status.
+This function can be called many times per second without bothering the dbus since the position is extrapolated from the short term cached paying status. 
 
 ## Get volume in mili db
 ... to be added
