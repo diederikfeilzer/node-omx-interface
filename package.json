@@ -1,19 +1,25 @@
 {
   "name": "omx-interface",
-  "version": "1.0.0",
+  "version": "1.0.26",
   "description": "An interface to the omxplayer through dbus",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "dbus.sh": "dbus.sh"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/diederik789/node-omx-interface.git"
   },
+  "dependencies": {
+    "socket.io": "1.4.5"
+  },
   "keywords": [
     "Omxplayer",
     "Raspberry",
-    "Py"
+    "Pi"
   ],
   "author": "Diederik Feilzer <diederikfeilzer@gmail.com>"
 }

@@ -1,0 +1,201 @@
+<!--? xml version="1.0" encoding="ISO-8859-1" ?-->
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<link rel="apple-touch-startup-image" href="app-open.png" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="translucent" />
+		<link rel="apple-touch-icon-precomposed" href="app-logo.png" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+		<style type="text/css">
+* { 
+-webkit-text-size-adjust: none; 
+}
+
+body{
+margin:0px;
+padding:0px;
+background:#000;
+font-size:19px;
+font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+color:#fff;
+padding-top:50px;
+}
+
+.button{
+float:left;
+text-align:center;
+padding:14px 10px;
+background:#030303;
+margin:5px 0 0 5px;
+color:#fff;
+font-weight:bold;
+color:black;
+}
+
+div{
+overflow:hidden;
+}
+
+.top{
+background:rgb(255, 215, 0);
+height:50px;
+line-height:50px;
+position:fixed;
+top:0;
+width:100%;
+}
+
+.top .link{
+display:inline-block;
+height:100%;
+line-height:inherit;
+padding:0 10px;
+}
+
+.top .link:hover{
+cursor:pointer;
+cursor:hand;
+}
+
+.top .link.active{
+background:orange;
+}
+
+.window{
+display:none;
+}
+
+.window.active{
+display:block;
+}
+		</style>
+	</head>
+	<body>
+		<div class="top">
+			<div class="link active" data-rel="files">
+				files
+			</div><div class="link" data-rel="remote">
+				remote
+			</div>
+		</div>
+		<div class="window active" data-rel="remote">
+			Device
+			<div style="margin-bottom:5px;">
+				<div class="button" onclick="socket.emit('poweroff',{});" style="background-color:red;width:53px;">off</div>
+			</div>
+			Info
+			<div>
+				<div style="background-color:gold;padding:10px;">
+					<div id="path" style="color:#333;font-weight:bold;"></div>
+					<div id="duration"></div>
+					<div id="position"></div>
+				</div>
+			</div>
+			
+			<div>
+				<div style="background-color: rgba(255, 215, 0,0.5); margin:0;border-top:1px solid #000;">
+					<div id="bar" style="position:relative;height: 20px; background-color: rgb(255, 215, 0); width: 0%; background-position: initial initial; background-repeat: initial initial;">
+		
+					</div>
+					<div id="position" style="position:absolute;z-index:10;line-height:20px;left:0;top:0;padding-left:10px;">
+					
+					</div>
+					<div id="duration" style="position:absolute;z-index:10;line-height:20px;right:0;top:0;padding-right:10px;">
+					
+					</div>
+				</div>
+			</div>
+			Player
+			<div>
+				<div class="button" onclick="socket.emit('stop',{});" style="background-color:orange;width:53px;">stop</div>		
+				<div class="button" onclick="socket.emit('togglePlay',{});" style="background-color:orange;width:134px;">pause/play</div>
+				<div class="button" onclick="socket.emit('play',{});" style="background-color:orange;width:53px;">play</div>
+				<div class="button" onclick="socket.emit('pause',{});" style="background-color:orange;width:53px;">pause</div>
+			</div>
+			Volume
+			<div>
+				<div class="button" onclick="socket.emit('volumeDown',{});" style="background-color:gold;width:53px;">-</div>
+				<div class="button" onclick="socket.emit('volumeUp',{});" style="background-color:gold;width:53px;">+</div>
+			</div>
+			Subtitles
+			<div>
+				<div class="button" onclick="socket.emit('toggleSubtitles',{});" style="background-color:gold;width:53px;">hide/show</div>
+				<div class="button" onclick="socket.emit('hideSubtitles',{});" style="background-color:gold;width:53px;">hide</div>
+				<div class="button" onclick="socket.emit('showSubtitles',{});" style="background-color:gold;width:53px;">show</div>
+			</div>
+
+		</div>
+		<div class="window" data-rel="files">
+			<div class="button" onclick="socket.emit('open',{path:'test.h264'});" style="background-color:gold;width:53px;">Test.h264</div>
+			<div class="button" onclick="socket.emit('open',{path:'rassegna2.avi'});" style="background-color:gold;width:53px;">Test.avi</div>
+		</div>
+	
+	<script>
+	
+	function toHHMMSS(sec_num){
+		/* http://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss */
+		var hours   = Math.floor(sec_num / 3600);
+   		var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    	var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+    	if (hours   < 10) {hours   = "0"+hours;}
+    	if (minutes < 10) {minutes = "0"+minutes;}
+    	if (seconds < 10) {seconds = "0"+seconds;}
+    	var time    = hours+':'+minutes+':'+seconds;
+    	return time;
+	}
+	
+	$('[data-rel].link').click(function(){
+		$this=$(this);
+		$('[data-rel].link,.window').removeClass('active');
+		$this.addClass('active');
+		$('[data-rel="'+$this.attr('data-rel')+'"]').addClass('active');
+	});
+	
+    var socket = io(location.href);
+   	socket.on('notification', function (data) {
+    
+    	console.log(data);
+    
+        $('#path').html(data.path);
+        if(data.duration > 0){
+	        $('#bar').width((100*Math.max(0,Math.min(data.position/data.duration,1)))+'%');
+	        $('#position').text(toHHMMSS(data.position));
+	        $('#duration').text(toHHMMSS(data.duration));
+		} else {
+			$('#bar').width('0%');
+		}
+      	
+    });
+
+	
+	</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
