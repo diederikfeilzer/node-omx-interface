@@ -1,7 +1,7 @@
-# node-omx-interface
+# omx-interface (Node.js)
 An interface between nodejs and the omxplayer via dbus.
 
-# IMPORTANT
+# Important
 This project is in beta. Many functionalities work but I'm working on many more!
 
 # Syntax
