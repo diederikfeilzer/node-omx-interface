@@ -45,10 +45,10 @@ omx.getCurrentVolume(); //NOT YET IMPLEMENTED
 
 # methods
 
-## jump to point in file/seek ralative to current position
+## jump to point in file/seek relative to current position
 omx.seek(seconds); //UNTESTED
 
-## jump to point in file/seek ralative to start point (absolute)
+## jump to point in file/seek relative to start point (absolute)
 omx.setPosition(seconds); //UNTESTED
 
 ## stop playing
