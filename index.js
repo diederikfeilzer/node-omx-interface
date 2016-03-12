@@ -113,7 +113,7 @@ var togglePlay = function() {
 			togglePlayTryCount++;
 			togglePlay();
 		} else {
-			togglePlayTryCount = 0
+			togglePlayTryCount = 0;
 		}
     });
 }
@@ -125,7 +125,7 @@ var volumeUp = function() {
 			volumeUpTryCount++;
 			volumeUp();
 		} else {
-			volumeUpTryCount = 0
+			volumeUpTryCount = 0;
 		}
     });
 }
@@ -137,7 +137,7 @@ var volumeDown = function() {
 			volumeDownTryCount++;
 			volumeDown();
 		} else {
-			volumeDownTryCount = 0
+			volumeDownTryCount = 0;
 		}
     });
 }
@@ -151,7 +151,8 @@ var seek = function(offset) {
 			seekTryCount++;
 			seek(offset);
 		} else {
-			seekTryCount = 0
+			seekTryCount = 0;
+			update_position();
 		}
     });
 }
@@ -163,7 +164,8 @@ var setPosition = function(position) {
 			setPositionTryCount++;
 			setPosition(position);
 		} else {
-			setPositionTryCount = 0
+			setPositionTryCount = 0;
+			update_position();
 		}
     });
 }
@@ -175,7 +177,7 @@ var toggleSubtitles = function() {
 			toggleSubtitlesTryCount++;
 			toggleSubtitles(position);
 		} else {
-			toggleSubtitlesTryCount = 0
+			toggleSubtitlesTryCount = 0;
 		}
     });
 }
@@ -187,7 +189,7 @@ var hideSubtitles = function() {
 			hideSubtitlesTryCount++;
 			hideSubtitles(position);
 		} else {
-			hideSubtitlesTryCount = 0
+			hideSubtitlesTryCount = 0;
 		}
     });
 }
@@ -199,7 +201,7 @@ var showSubtitles = function() {
 			showSubtitlesTryCount++;
 			showSubtitles(position);
 		} else {
-			showSubtitlesTryCount = 0
+			showSubtitlesTryCount = 0;
 		}
     });
 }
@@ -207,7 +209,7 @@ var showSubtitles = function() {
 var update_position = function() {
 	exec(dbus + 'position',function(error, stdout, stderr) {
 		if (error) return false;
-		var position = Math.round(Math.min(Math.max(0,parseInt(stdout)),cache.duration.value));
+		var position = parseInt(stdout);
 		cache.position.value = position;
 		cache.position.time = new Date();
 		cache.position.valid = true;
