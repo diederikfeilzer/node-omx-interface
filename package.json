@@ -1,6 +1,6 @@
 {
   "name": "omx-interface",
-  "version": "1.0.26",
+  "version": "1.1.1",
   "description": "An interface to the omxplayer through dbus",
   "main": "index.js",
   "scripts": {
@@ -11,10 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/diederik789/node-omx-interface.git"
+    "url": "https://github.com/diederikfeilzer/node-omx-interface"
   },
   "dependencies": {
-    "socket.io": "1.4.5"
+    "express": "^4.13.4",
+    "lodash": "^4.6.1",
+    "socket.io": "^1.4.5"
   },
   "keywords": [
     "Omxplayer",
