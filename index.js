@@ -1,4 +1,6 @@
 var exec = require('child_process').exec;
+var _ = require('lodash');
+var path = require('path');
 
 exec('mkfifo omxpipe');
 
@@ -14,6 +16,11 @@ var cache = {
 		valid:false
 	},
 	duration:{
+		value:0,
+		time:new Date(),
+		valid:false
+	},
+	volume:{
 		value:0,
 		time:new Date(),
 		valid:false
@@ -200,7 +207,7 @@ var showSubtitles = function() {
 var update_position = function() {
 	exec(dbus + 'position',function(error, stdout, stderr) {
 		if (error) return false;
-		var position = parseInt(stdout); //parseFloat
+		var position = Math.round(Math.min(Math.max(0,parseInt(stdout)),cache.duration.value));
 		cache.position.value = position;
 		cache.position.time = new Date();
 		cache.position.valid = true;
@@ -225,10 +232,20 @@ var update_status = function() {
 var update_duration = function() {
 	exec(dbus + 'duration',function(error, stdout, stderr) {
 		if (error) return false;
-        var duration = Math.round(parseInt(stdout.substring((stdout.indexOf("int64")>-1 ? stdout.indexOf("int64")+6:0)))/10000)/100;
+        var duration = Math.round(Math.max(0,Math.round(parseInt(stdout.substring((stdout.indexOf("int64")>-1 ? stdout.indexOf("int64")+6:0)))/10000)/100));
 		cache.duration.value = duration;
 		cache.duration.time = new Date();
 		cache.duration.valid = true;
+    });
+}
+
+var update_volume = function() {
+	exec(dbus + 'volume',function(error, stdout, stderr) {
+		if (error) return false;
+        var volume = parseFloat(stdout);
+		cache.volume.value = volume;
+		cache.volume.time = new Date();
+		cache.volume.valid = true;
     });
 }
 
@@ -239,8 +256,11 @@ var getCurrentPosition = function(){
 	if(!cache.position.valid) {
 		update_position();
 	}
-	return Math.max(0,Math.min(Math.round((cache.position.value + getCurrentStatus()*((new Date())-cache.position.time)*1000)/1000000),getCurrentDuration()));
-	//return cache.position.value;
+	if(cache.position.value > 0) {
+		return Math.round(Math.max(0,Math.min(Math.round((cache.position.value + getCurrentStatus()*((new Date())-cache.position.time)*1000)/1000000),getCurrentDuration())));
+	} else {
+		return 0;
+	}
 }
 
 var getCurrentStatus = function(){
@@ -260,10 +280,6 @@ var getCurrentDuration = function(){
 	return cache.duration.value;
 }
 
-/*
-
-// NOT YET READY
-
 var getCurrentVolume = function(){
 	if(!cache.volume.valid || (cache.volume.value < 1)) {
 		update_volume();
@@ -271,10 +287,8 @@ var getCurrentVolume = function(){
 	return cache.volume.value;
 }
 
-*/
-
 var onProgress = function(callback){
-	setInterval(function(){callback(getCurrentPosition(),getCurrentDuration());},1000);
+	setInterval(function(){if(cache.isPlaying.value){callback({position:getCurrentPosition(),duration:getCurrentDuration()});}},1000);
 }
 
 var open = function (path, options) {
@@ -284,10 +298,13 @@ var open = function (path, options) {
 	
 	cache.path.value = path;
 	cache.path.valid = true;
+	
 	cache.position.value = 0;
-	cache.position.valie = false;
+	cache.position.valid = false;
+	
 	cache.duration.value = 0;
 	cache.duration.valid = false;
+	
 	cache.isPlaying.value = 0;
 	cache.isPlaying.valid = false;
 	
@@ -334,48 +351,78 @@ var open = function (path, options) {
 };
 
 var init_remote = function(options){
+
 	var settings = options || {};
 	
-	var app = require('http').createServer(handler)
-	var io = require('socket.io')(app);
-	var fs = require('fs');
-
-	function handler (req, res){
-		fs.readFile(__dirname+'/remote.html','utf8',function (err, data){
-			res.writeHead(200);
-	   		res.end(data);
-		});
-	}
+	settings.port = (settings.port || 8000);
 	
-	function transferFileList(){
-		var data = {};
-		
-		//loop trough files
-		var file = {};
-		file.name='testname';
-		//end
-		
-		data.time = new Date();
-		data.files = Array();
-		data.files.push(file);
+	var fs = require('fs');
+	var path = require('path');
+	var app = require('express')();
+	var server = require('http').Server(app);
+	var io = require('socket.io')(server);
+	
+	server.listen(settings.port);
 
-		io.emit('notification', data);
-	}
+	app.get('/',function(req, res){
+		res.sendFile(__dirname+'/remote.html');
+	});
+
+	app.get('/files',function(req, res){
+
+		/*
+				Addapted from: https://chawlasumit.wordpress.com/2014/08/04/how-to-create-a-web-based-file-browser-using-nodejs-express-and-jquery-datatables/
+		*/
+ 		
+ 		var query = req.query.query || process.env.HOME || process.env.USERPROFILE;
+ 		
+		fs.readdir(query, function (err, files) {
+     		if (err) {
+        		throw err;
+      		}
+      		var data = [];
+      		data.push({ Name : '../', IsDirectory: true, Path : path.join(query,'../')  });
+      		files.forEach(function (file) {
+        		try {
+           	  		var isDirectory = fs.statSync(path.join(query,file)).isDirectory();
+					if (isDirectory) {
+						if(file.substr(0, 1) != ".") {
+	        	 	   		data.push({ Name : file, IsDirectory: true, Path : path.join(query, file)  });
+	        	 	   	}
+      	  	  		} else {
+   	    	 			var ext = path.extname(file);
+	 					if(file.substr(0, 1) != ".") {
+							data.push({ Name : file, Ext : ext, IsDirectory: false, Path : path.join(query, file) });
+    	        		} 
+       	        	}
+				} catch(e) {
+      				console.log(e); 
+       			}       
+       		});
+			data = _.sortBy(data, function(f) { return f.Name });
+			res.json(data);
+		});
+			
+		/*
+			end source
+		*/
+	});
 
 	io.on('connection', function (socket){
 	
-		setInterval(function update(){
+		setInterval(function(){
 			var data = {};
 			data.duration=getCurrentDuration();
 			data.position=getCurrentPosition();
 			data.status=getCurrentStatus();
 			data.path=cache.path.value;
-			data.volume=0;
-			data.subtitles=0;
+			data.name=path.basename(cache.path.value);
+			data.volume=null; //temp.
+			data.subtitles=null; //temp.
 			data.time = new Date();
-			socket.volatile.emit('notification', data); //io.volatile.emit
+			socket.emit('notification', data); //io.volatile.emit vs io.emit;
 		},1000);
-	
+			
 		socket.on('open', function (data) {
 			open(data.path,{blackBackground:true,audioOutput:'both',disableKeys:true,disableOnScreenDisplay:true});
 		});
@@ -418,30 +465,27 @@ var init_remote = function(options){
 			setPosition(data.position);
 		});
 		
-		socket.on('seek', function (offset) {
+		socket.on('seek', function (data) {
 			seek(data.offset);
 		});
 		
-		/* 
-		
-		//NOT YET IMPEMENTED
-		
-		socket.on('seekFastBackward', function (offset) {
-			seek(-10000);
+		socket.on('seekFastBackward', function (data) {
+			seek(-300);
 		});
 		
-		socket.on('seekFastForward', function (offset) {
-			seek(10000);
+		socket.on('seekFastForward', function (data) {
+			seek(300);
 		});
 		
-		socket.on('seekBackward', function (offset) {
-			seek(-1000);
+		socket.on('seekBackward', function (data) {
+			seek(-30);
 		});
 		
-		socket.on('seekForward', function (offset) {
-			seek(1000);
+		socket.on('seekForward', function (data) {
+			seek(30);
 		});
 		
+		/*
 		socket.on('setVolume', function (data) {
 			setVolume(data.volume);
 		});
@@ -460,7 +504,6 @@ var init_remote = function(options){
 		});
 	});
 	
-	app.listen(8000);
 
 	var os = require('os');
 	var address = require('network-address');
@@ -480,7 +523,7 @@ var init_remote = function(options){
 			  	});
 		}
 	
-	console.log('remote at: '+ip+':8000');
+	console.log('remote at: '+ip+':'+settings.port);
 	return true;
 }
 
@@ -501,3 +544,4 @@ module.exports.showSubtitles = showSubtitles;
 module.exports.getCurrentPosition = getCurrentPosition;
 module.exports.getCurrentDuration = getCurrentDuration;
 module.exports.onProgress = onProgress;
+	
