@@ -11,7 +11,8 @@ omx.open('test.h624',{audioOutput:'hdmi',blackBackground:true,disableKeys:true,d
 
 # remote
 The "omx-interface" package comes with an optional remote for your mobile phone. In the remote app you can browse files and control the player over your local network. Unlike other omx middleware get methods are supported. So the current time and duration are available!
-Screenshot yet to come.
+
+<img src="https://raw.githubusercontent.com/diederikfeilzer/node-omx-interface/master/Screenshot.png" alt="Screenshot" width=300>
 
 # options
 ## general options
