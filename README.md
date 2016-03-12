@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/diederikfeilzer/node-omx-interface/master/hero.png" alt="hero" width="100%">
+
 # omx-interface (Node.js)
 An interface between nodejs and the omxplayer via dbus.
 
@@ -10,21 +12,21 @@ var omx = require('omx-interface');
 
 omx.open('test.h624',{audioOutput:'hdmi', blackBackground:true, disableKeys:true, disableOnScreenDisplay:true})
 
-omx.setPosition(60*5); //set position to 5 minutes in to the movie
+omx.setPosition(60*5); //set position to 5 minutes into the movie
 ```
 # remote
 The "omx-interface" package comes with an optional remote for your mobile phone. In the remote app you can browse files and control the player over your local network. Unlike other OMX middleware, GET and SET methods are supported rather than just emulating keypresses. So the current time, duration and volume are available!
 
 <img src="https://raw.githubusercontent.com/diederikfeilzer/node-omx-interface/master/Screenshot.png" alt="Screenshot" width=300>
 
-Since the remote is more of a showcase of the capabilities of the middleware it is optional and has to be initiated before use.
+Since the remote is more of a capability showcase it is optional and has to be initiated before use.
 
 ```
 var omx = require('omx-interface');
 omx.init_remote({port:8000});
 ```
 
-The remote can be located from any browser on the local network. The webpage can be added to the home screen for a more app like experiance.
+The remote can be located from any browser on the local network. The webpage can be added to the home screen for a more app like feeling. The remote address is logged to the console after initialization.
 
 # options
 ## general options
