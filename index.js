@@ -53,7 +53,7 @@ var play = function() {
 				cache.isPlaying.valid = true;
 			}
 		}
-  });
+	});
 }
 
 var pauseTryCount = 0;
@@ -73,7 +73,7 @@ var pause = function() {
  				cache.isPlaying.valid = true;
 			}
 		}
-  });
+	});
 }
 
 var stopTryCount = 0;
@@ -88,7 +88,7 @@ var stop = function() {
 			stopTryCount = 0;
 			cache = defaults;
 		}
-  });
+	});
 }
 
 var quitTryCount = 0;
