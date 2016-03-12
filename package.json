@@ -1,7 +1,7 @@
 {
   "name": "omx-interface",
-  "version": "1.1.1",
-  "description": "An interface to the omxplayer through dbus",
+  "version": "1.1.4",
+  "description": "An interface for omxplayer through dbus",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,9 +19,11 @@
     "socket.io": "^1.4.5"
   },
   "keywords": [
-    "Omxplayer",
-    "Raspberry",
-    "Pi"
+    "omxplayer",
+    "raspberry",
+    "pi",
+    "interface",
+    "gui"
   ],
   "author": "Diederik Feilzer <diederikfeilzer@gmail.com>"
 }
