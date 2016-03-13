@@ -355,6 +355,11 @@ var open = function (path, options) {
 		args.push('"'+settings.subtitlePath+'"');
 	}
 
+	if (settings.startAt){
+		args.push('--pos');
+		args.push(''+settings.startAt+'');
+	}
+
 	args.push('--dbus_name');
 	args.push('org.mpris.MediaPlayer2.omxplayer');
 
@@ -373,8 +378,24 @@ var init_remote = function(options){
 
 	settings.port = (settings.port || 8000);
 
+	var jsonfile = require('jsonfile');
+	var database = 'database.json';
+	var history = jsonfile.readFileSync(database) || {};
+	var updateHistory = function(){
+		jsonfile.writeFile(database, history, function (err) {
+  		console.error(err);
+		})
+	}
+
+	var getHistory = function(path){
+		if (history.hasOwnProperty(path)){
+			return history[path];
+		} else {
+			return {time: null, position:null, duration:null};
+		}
+	}
+
 	var fs = require('fs');
-	var path = require('path');
 	var app = require('express')();
 	var server = require('http').Server(app);
 	var io = require('socket.io')(server);
@@ -383,6 +404,18 @@ var init_remote = function(options){
 
 	app.get('/',function(req, res){
 		res.sendFile(__dirname+'/remote.html');
+	});
+
+	app.get('/logo_128x128.png',function(req, res){
+		res.sendFile(__dirname+'/logo_128x128.png');
+	});
+
+	app.get('/logo_192x192.png',function(req, res){
+		res.sendFile(__dirname+'/logo_192x192.png');
+	});
+
+	app.get('/startup.png',function(req, res){
+		res.sendFile(__dirname+'/startup.png');
 	});
 
 	app.get('/files',function(req, res){ // Thanks to https://chawlasumit.wordpress.com/2014/08/04/how-to-create-a-web-based-file-browser-using-nodejs-express-and-jquery-datatables/
@@ -401,13 +434,15 @@ var init_remote = function(options){
 							data.push({ Name : file, IsDirectory: true, Path : path.join(query, file)  });
 						}
 					} else {
-						var ext = path.extname(file);
-						if(file.substr(0, 1) != ".") {
-							data.push({ Name : file, Ext : ext, IsDirectory: false, Path : path.join(query, file) });
+						var ext = path.extname(file).substr(1);
+						if(file.substr(0, 1) != "." && ['mp4','avi','mkv','flv','webm','vob','ogv','ogg','mov','qt','wmv','m4v','mpg','mpeg','m4v','m2v','3gp'].indexOf(ext) != -1) {
+							var fullpath = path.join(query, file);
+							var pathhistory = getHistory(fullpath);
+							data.push({ Name : file, Ext : ext, IsDirectory: false, Path : fullpath, LastDateTime: pathhistory.time, LastPosition: pathhistory.position, Duration: pathhistory.duration});
 						}
 					}
 				} catch(e) {
-					console.log(e);
+
 				}
 			});
 			data = _.sortBy(data, function(f) { return f.Name });
@@ -419,14 +454,21 @@ var init_remote = function(options){
 
 		setInterval(function(){ //TODO: push updates after events rather than each second.
 			var data = {};
+			data.path=cache.path.value;
+			data.time = new Date();
 			data.duration=getCurrentDuration();
 			data.position=getCurrentPosition();
 			data.status=getCurrentStatus();
 			data.volume=getCurrentVolume();
-			data.path=cache.path.value;
+			if(data.path){
+				history[data.path].position = data.position;
+				history[data.path].duration = data.duration;
+				history[data.path].time = data.time;
+				updateHistory(); //perhaps just on quitting
+			}
 			data.name=path.basename(cache.path.value);
 			data.subtitles=null; //for future .srt file array.
-			data.time = new Date();
+
 			socket.emit('notification', data); //io.volatile.emit vs io.emit;
 		},1000);
 
@@ -435,8 +477,15 @@ var init_remote = function(options){
 				blackBackground:true,
 				audioOutput:'both',
 				disableKeys:true,
-				disableOnScreenDisplay:true
+				disableOnScreenDisplay:true,
+				startAt:(data.startAt || false)
 			});
+			if (!history.hasOwnProperty(data.path)){
+				history[data.path] = {};
+				history[data.path].position = 0;
+				history[data.path].duration = null;
+				history[data.path].time = new Date();
+			}
 		});
 
 		socket.on('togglePlay', function (data) {
@@ -553,4 +602,5 @@ module.exports.showSubtitles = showSubtitles;
 module.exports.getCurrentPosition = getCurrentPosition;
 module.exports.getCurrentDuration = getCurrentDuration;
 module.exports.getCurrentVolume = getCurrentVolume;
+module.exports.getCurrentStatus = getCurrentStatus;
 module.exports.onProgress = onProgress;
