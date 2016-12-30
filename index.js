@@ -4,42 +4,46 @@ var path = require('path');
 
 exec('mkfifo omxpipe');
 
-var defaults = {
-	path:{
-		value:'',
-		time:new Date(),
-		valid:false
-	},
-	position:{
-		value:false,
-		time:new Date(),
-		valid:false
-	},
-	duration:{
-		value:0,
-		time:new Date(),
-		valid:false
-	},
-	volume:{
-		value:0,
-		time:new Date(),
-		valid:false
-	},
-	isPlaying:{
-		value:0,
-		time:new Date(),
-		valid:false
-	}
-};
+function setDefault ()	{
+	var defaults = {
+		path:{
+			value:'',
+			time:new Date(),
+			valid:false
+		},
+		position:{
+			value:false,
+			time:new Date(),
+			valid:false
+		},
+		duration:{
+			value:0,
+			time:new Date(),
+			valid:false
+		},
+		volume:{
+			value:0,
+			time:new Date(),
+			valid:false
+		},
+		isPlaying:{
+			value:0,
+			time:new Date(),
+			valid:false
+		}
+	};
+		
+	return defaults;	
+}
 
-var cache = defaults;
+var cache = setDefault();
 
 dbus = "bash "+__dirname+"/dbus.sh ";
 
 var playTryCount = 0;
 var play = function() {
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
-		if(error && playTryCount < 3){
+		if(error && (playTryCount < 3)){
 			playTryCount++;
 			play();
 		} else if(error) {
@@ -59,7 +63,7 @@ var play = function() {
 var pauseTryCount = 0;
 var pause = function() {
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
-		if(error && stopTryCount < 3){
+		if(error && (stopTryCount < 3)){
 			pauseTryCount++;
 			pause();
 		} else if(error) {
@@ -79,7 +83,7 @@ var pause = function() {
 var stopTryCount = 0;
 var stop = function() {
 	exec(dbus + 'stop',function(error, stdout, stderr) {
-		if(error && stopTryCount < 3){
+		if(error && (stopTryCount < 3)){
 			stopTryCount++;
 			stop();
 		} else if(error) {
@@ -94,7 +98,7 @@ var stop = function() {
 var quitTryCount = 0;
 var quit = function() {
 	exec(dbus + 'quit',function(error, stdout, stderr) {
-		if(error && quitTryCount < 3){
+		if(error && (quitTryCount < 3)){
 			quitTryCount++;
 			quit();
 		} else if(error) {
@@ -109,7 +113,7 @@ var quit = function() {
 var togglePlayTryCount = 0;
 var togglePlay = function() {
 	exec(dbus + 'playpause',function(error, stdout, stderr) {
-		if(error && togglePlayTryCount < 4){
+		if(error && (togglePlayTryCount < 4)){
 			togglePlayTryCount++;
 			togglePlay();
 		} else {
@@ -121,7 +125,7 @@ var togglePlay = function() {
 var volumeUpTryCount = 0;
 var volumeUp = function() {
 	exec(dbus + 'volumeup',function(error, stdout, stderr) {
-		if(error && volumeUpTryCount < 4){
+		if(error && (volumeUpTryCount < 4)){
 			volumeUpTryCount++;
 			volumeUp();
 		} else {
@@ -133,7 +137,7 @@ var volumeUp = function() {
 var volumeDownTryCount = 0;
 var volumeDown = function() {
 	exec(dbus + 'volumedown',function(error, stdout, stderr) {
-		if(error && volumeDownTryCount < 4){
+		if(error && (volumeDownTryCount < 4)){
 			volumeDownTryCount++;
 			volumeDown();
 		} else {
@@ -145,7 +149,7 @@ var volumeDown = function() {
 var seekTryCount = 0;
 var seek = function(offset) { //seek offset in seconds; relative from current position; negative values will cause a jump back;
 	exec(dbus + 'seek '+Math.round(offset*1000000),function(error, stdout, stderr) {
-		if(error && seekTryCount < 4){
+		if(error && (seekTryCount < 4)){
 			seekTryCount++;
 			seek(offset);
 		} else {
@@ -158,7 +162,7 @@ var seek = function(offset) { //seek offset in seconds; relative from current po
 var setPositionTryCount = 0;
 var setPosition = function(position) { //position in seconds from start; //positions larger than the duration will stop the player;
 	exec(dbus + 'setposition '+Math.round(position*1000000),function(error, stdout, stderr) {
-		if(error && setPositionTryCount < 4){
+		if(error && (setPositionTryCount < 4)){
 			setPositionTryCount++;
 			setPosition(position);
 		} else {
@@ -171,7 +175,7 @@ var setPosition = function(position) { //position in seconds from start; //posit
 var setVolumeTryCount = 0;
 var setVolume = function(volume) { //volume should be set from 0.0 to 1.0; Above 1.0 is depreciated;
 	exec(dbus + 'setvolume '+volume,function(error, stdout, stderr) {
-		if(error && setPositionTryCount < 4){
+		if(error && (setPositionTryCount < 4)){
 			setVolumeTryCount++;
 			setVolume(volume);
 		} else {
@@ -184,7 +188,7 @@ var setVolume = function(volume) { //volume should be set from 0.0 to 1.0; Above
 var toggleSubtitlesTryCount = 0;
 var toggleSubtitles = function() {
 	exec(dbus + 'togglesubtitles',function(error, stdout, stderr) {
-		if(error && toggleSubtitlesTryCount < 4){
+		if(error && (toggleSubtitlesTryCount < 4)){
 			toggleSubtitlesTryCount++;
 			toggleSubtitles(position);
 		} else {
@@ -196,7 +200,7 @@ var toggleSubtitles = function() {
 var hideSubtitlesTryCount = 0;
 var hideSubtitles = function() {
 	exec(dbus + 'hidesubtitles',function(error, stdout, stderr) {
-		if(error && hideSubtitlesTryCount < 4){
+		if(error && (hideSubtitlesTryCount < 4)){
 			hideSubtitlesTryCount++;
 			hideSubtitles(position);
 		} else {
@@ -208,7 +212,7 @@ var hideSubtitles = function() {
 var showSubtitlesTryCount = 0;
 var showSubtitles = function() {
 	exec(dbus + 'showsubtitles',function(error, stdout, stderr) {
-		if(error && showSubtitlesTryCount < 4){
+		if(error && (showSubtitlesTryCount < 4)){
 			showSubtitlesTryCount++;
 			showSubtitles(position);
 		} else {
@@ -239,7 +243,7 @@ var update_status = function() {
 var update_duration = function() {
 	exec(dbus + 'getduration',function(error, stdout, stderr) {
 		if (error) return false;
-    var duration = Math.round(Math.max(0,Math.round(parseInt(stdout.substring((stdout.indexOf("int64")>-1 ? stdout.indexOf("int64")+6:0)))/10000)/100));
+    	var duration = Math.round(Math.max(0,Math.round(parseInt(stdout.substring((stdout.indexOf("int64")>-1 ? stdout.indexOf("int64")+6:0)))/10000)/100));
 		cache.duration.value = duration;
 		cache.duration.time = new Date();
 		cache.duration.valid = true;
@@ -249,7 +253,7 @@ var update_duration = function() {
 var update_volume = function() {
 	exec(dbus + 'getvolume',function(error, stdout, stderr) {
 		if (error) return false;
-    var volume = parseFloat(stdout);
+    	var volume = parseFloat(stdout);
 		cache.volume.value = volume;
 		cache.volume.time = new Date();
 		cache.volume.valid = true;
@@ -322,7 +326,7 @@ var open = function (path, options) {
 	var args = [];
 	var command = 'omxplayer';
 
-	cache = defaults;
+	cache = setDefault();
 
 	cache.path.value = path;
 	cache.path.valid = true;
@@ -383,7 +387,7 @@ var init_remote = function(options){
 	var history = jsonfile.readFileSync(database) || {};
 	var updateHistory = function(){
 		jsonfile.writeFile(database, history, function (err) {
-  		console.error(err);
+  			console.error(err);
 		})
 	}
 
@@ -405,6 +409,10 @@ var init_remote = function(options){
 	app.get('/',function(req, res){
 		res.sendFile(__dirname+'/remote.html');
 	});
+	
+	app.get('/theme.css',function(req, res){
+		res.sendFile(__dirname+'/theme.css');
+	});
 
 	app.get('/logo_128x128.png',function(req, res){
 		res.sendFile(__dirname+'/logo_128x128.png');
@@ -425,7 +433,7 @@ var init_remote = function(options){
 				throw err;
 			}
 			var data = [];
-			data.push({ Name : '../', IsDirectory: true, Path : path.join(query,'../')  });
+			data.push({ Name : '../ (go back)', IsDirectory: true, Path : path.join(query,'../')  });
 			files.forEach(function (file) {
 				try {
 					var isDirectory = fs.statSync(path.join(query,file)).isDirectory();
@@ -565,7 +573,7 @@ var init_remote = function(options){
 
 
 	var os = require('os');
-	var address = require('network-address');
+	//var address = require('network-address');
 
 	//IP resolve
 

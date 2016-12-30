@@ -22,6 +22,10 @@
 		<link rel="apple-touch-icon" sizes="128x128" href="logo_128x128.png">
 		<link rel="apple-touch-icon-precomposed" sizes="128x128" href="logo_128x128.png">
 		<link rel="apple-touch-startup-image" href="startup.png">
+		
+		<!--- style --->
+		
+		<link rel="stylesheet" href="theme.css">
 
 		<!--- external stuff -->
 
@@ -29,65 +33,6 @@
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 		<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
 
-
-<style>
-html, document, body{
-margin:0;
-padding:0;
-width:100%;
-height:100%;
-overflow:hidden;
-}
-
-* {
--webkit-text-size-adjust: none;
-}
-
-body{
-background:#000;
-font-size:19px;
-font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-color:#fff;
-}
-
-.button{
-float:left;
-text-align:center;
-padding:0;
-line-height:90px;
-margin:0;
-color:#fff;
-font-weight:bold;
-color:black;
-font-size:30px;
-color:white;
-width:25%;
-}
-
-div{
-overflow:hidden;
-}
-
-.window{
-display:none;
-}
-
-.window.active{
-display:block;
-z-index:999;
-position:relative;
-height:100%;
-}
-
-.folder,.file{
-line-height:26px;
-color:#fff;
-font-weight:bold;
-color:black;
-font-size:17px;
-color:white;
-}
-		</style>
 	</head>
 	<body>
 		<div style="overflow:hidden;width:100%;opacity:0.5;">
@@ -98,7 +43,7 @@ color:white;
 			<div style="padding:10px;position:relative;">
 				<div style="width:90px;height:90px;float:left;" class="fa fa-television fa-4x"></div>
 				<div style="font-size:14px;padding-top:12px;color:rgba(255,255,255,0.8);font-weight:bold;">Now playing:</div>
-				<div id="path" style="color:white;font-weight:bold;">Inception (2010).avi</div>
+				<div id="path" style="color:white;font-weight:bold;"></div>
 			</div>
 			<div id="posbar" style="position:relative;background-color: rgba(255, 255, 255,0.5); margin:0;">
 				<div id="bar" style="height: 40px; background-color: #48b; width: 10%; background-position: initial initial; background-repeat: initial initial;">
@@ -125,7 +70,7 @@ color:white;
 				<div class="button" onclick="socket.emit('seekFastForward',{});"><i class="fa fa-fast-forward"></i></div>
 			</div>
 
-			<div style="position:absolute;bottom:0;left:0;color:red;opacity:0.3;" class="button" onclick="socket.emit('poweroff',{});"><i class="fa fa-power-off"></i></div>
+			<div style="position:absolute;bottom:0;left:0;color:red;opacity:0.3;" class="button" onclick="if(confirm('Do you want to power-off your Pi?')){socket.emit('poweroff',{});};"><i class="fa fa-power-off"></i></div>
 			<div style="position:absolute;bottom:0;right:0;color:red;opacity:0.8;" class="button" onclick="$('.window').removeClass('active');$('#files').addClass('active');"><i class="fa fa-reorder"></i></div>
 		</div>
 		<div class="window" id="files">

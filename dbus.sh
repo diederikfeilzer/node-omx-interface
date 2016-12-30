@@ -22,7 +22,7 @@ getposition)
   [ $? -ne 0 ] && exit 1
   position="$(awk '{print $2}' <<< "$position")"
   echo $position
-;;
+  ;;
 
 getplaystatus)
   playstatus=`dbus-send --print-reply=literal --session --reply-timeout=500 --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.PlaybackStatus`
@@ -59,7 +59,7 @@ quit)
   ;;
 
 setvolume)
-  dbus-send --print-reply=double --session --reply-timeout=500 --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Volume double:$2
+  dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Volume double:$2 >/dev/null
   ;;
 
 volumeup)
