@@ -3,10 +3,7 @@
 # omx-interface (Node.js)
 An interface between nodejs and the omxplayer via dbus.
 
-# Important
-This project is in beta. Many functionalities work but I'm working on many more!
-
-# Syntax
+# Syntax (Do it yourself)
 ```
 var omx = require('omx-interface');
 
@@ -17,14 +14,19 @@ var options = {
 	disableOnScreenDisplay:true
 };
 
-omx.open('test.h624',options);
+omx.open('test.mp4',options); //open file
+
+omx.onProgress(function(track){ //subscribe for track updates (every second while not paused for now)
+	console.log(track.position);
+	console.log(track.duration);
+});
 
 omx.setPosition(60*5); //set position to 5 minutes into the movie
 ```
-# Out of the box remote
+# Syntax (Out of the box with web-socket remote)
 ```
 var omx = require('omx-interface');
-omx.init_remote({port:8000});
+omx.init_remote({port:8000}); //streams a remote on localhost:8000
 ```
 
 The "omx-interface" package comes with an optional remote for your mobile phone. In the remote app you can browse files and control the player over your local network. Unlike other OMX middleware, GET and SET methods are supported rather than just emulating keypresses. So the current time, duration and volume are available!
@@ -47,6 +49,7 @@ disableKeys:             boolean, false by default (true when using remote)
 
 disableOnScreenDisplay:  boolean, false by default (true when using remote)
 
+
 ## Subtitle options
 
 disableGhostbox:         boolean, false by default
@@ -65,7 +68,7 @@ This function can be called many times per second without bothering the DBus sin
 ## Get volume as fraction of max (0.0 - 1.0)
 ``omx.getCurrentVolume();``
 
-# methods
+# Methods
 
 ## Jump to point in file/seek relative to current position (-Inf to +Inf)
 ``omx.seek(seconds);``

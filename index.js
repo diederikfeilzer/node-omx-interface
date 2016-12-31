@@ -303,7 +303,7 @@ var getCurrentVolume = function(){
 var onProgress = function(callback){
 	setInterval(function(){
 		if(getCurrentStatus()){
-			callback({position:getCurrentPosition(), duration:getCurrentDuration(), volume:getCurrentVolume()});
+			callback({position:getCurrentPosition(), duration:getCurrentDuration()});
 		}
 	},1000);
 }
@@ -462,21 +462,23 @@ var init_remote = function(options){
 	io.on('connection', function (socket){
 
 		setInterval(function(){ //TODO: push updates after events rather than each second.
-			var data = {};
-			data.path=cache.path.value;
-			data.time = new Date();
-			data.duration=getCurrentDuration();
-			data.position=getCurrentPosition();
-			data.status=getCurrentStatus();
-			data.volume=getCurrentVolume();
+			var data = {
+				path: cache.path.value,
+				time: new Date(),
+				duration: getCurrentDuration(),
+				position: getCurrentPosition(),
+				status: getCurrentStatus(),
+				volume: getCurrentVolume(),
+				name: path.basename(cache.path.value),
+				subtitles: null
+			};
+
 			if(data.path){
 				history[data.path].position = data.position;
 				history[data.path].duration = data.duration;
 				history[data.path].time = data.time;
 				updateHistory(); //perhaps just on quitting
 			}
-			data.name=path.basename(cache.path.value);
-			data.subtitles=null; //for future .srt file array.
 
 			socket.emit('notification', data); //io.volatile.emit vs io.emit;
 		},1000);
@@ -574,7 +576,6 @@ var init_remote = function(options){
 
 
 	var os = require('os');
-	//var address = require('network-address');
 
 	//IP resolve
 
