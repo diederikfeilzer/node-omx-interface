@@ -1,5 +1,4 @@
 var exec = require('child_process').exec;
-var _ = require('lodash');
 var path = require('path');
 
 exec('mkfifo omxpipe');
@@ -338,19 +337,19 @@ var open = function (path, options) {
 		args.push(settings.audioOutput);
 	}
 
-	if (settings.blackBackground !== false) {
+	if (settings.blackBackground !== false) { // defaults to true
 		args.push('-b');
 	}
 
-	if (settings.disableKeys === true) {
+	if (settings.disableKeys === true) { //defaults to  false
 		args.push('--no-keys')
 	}
 
-	if (settings.disableOnScreenDisplay === true) {
+	if (settings.disableOnScreenDisplay === true) { //defaults to  false
 		args.push('--no-osd')
 	}
 
-	if (settings.disableGhostbox === true) {
+	if (settings.disableGhostbox === true) { //defaults to  false
 		args.push('--no-ghost-box');
 	}
 
@@ -383,7 +382,7 @@ var init_remote = function(options){
 	settings.port = (settings.port || 8000);
 
 	var jsonfile = require('jsonfile');
-	var database = 'database.json';
+	var database = __dirname+'/database.json';
 	var history = jsonfile.readFileSync(database) || {};
 	var updateHistory = function(){
 		jsonfile.writeFile(database, history, function (err) {
@@ -453,7 +452,9 @@ var init_remote = function(options){
 
 				}
 			});
-			data = _.sortBy(data, function(f) { return f.Name });
+			
+			data = data.sort(function(a,b) {return (a.Name > b.Name) ? 1 : ((b.Name > a.Name) ? -1 : 0);} );
+			
 			res.json(data);
 		});
 	});

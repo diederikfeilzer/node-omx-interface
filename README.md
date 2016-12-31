@@ -10,7 +10,14 @@ This project is in beta. Many functionalities work but I'm working on many more!
 ```
 var omx = require('omx-interface');
 
-omx.open('test.h624',{audioOutput:'hdmi', blackBackground:true, disableKeys:true, disableOnScreenDisplay:true})
+var options = {
+	audioOutput:'hdmi', 
+	blackBackground:true, 
+	disableKeys:true, 
+	disableOnScreenDisplay:true
+};
+
+omx.open('test.h624',options);
 
 omx.setPosition(60*5); //set position to 5 minutes into the movie
 ```
@@ -28,25 +35,25 @@ Since the remote is more of a capability showcase it is optional and has to be i
 
 The remote can be located from any browser on the local network. The webpage can be added to the home screen for a more app like feeling. The remote address is logged to the console after initialization.
 
-# options
+# Options
 ## general options
 audioOutput:             'hdmi' | 'local' | 'both'
 
 blackBackground:         boolean, true by default
 
-## communication options (defaults to false since dbus replaces these features)
+## Communication options
 
-disableKeys:             boolean, false by default
+disableKeys:             boolean, false by default (true when using remote)
 
-disableOnScreenDisplay:  boolean, false by default
+disableOnScreenDisplay:  boolean, false by default (true when using remote)
 
-## subtitle options
+## Subtitle options
 
 disableGhostbox:         boolean, false by default
 
 subtitlePath:            string, '' or false disables subtitles as is done by default
 
-# properties
+# Properties
 ## Get duration of current track/movie in seconds
 ``omx.getCurrentDuration();``
 
