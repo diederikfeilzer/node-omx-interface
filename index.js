@@ -355,6 +355,10 @@ var open = function (path, options) {
 		args.push('--no-ghost-box');
 	}
 
+	if (settings.loop === true) { // defaults to false
+		args.push('--loop');
+	}
+
 	if (settings.subtitlePath && settings.subtitlePath != "" ){
 		args.push('--subtitles');
 		args.push('"'+settings.subtitlePath+'"');
