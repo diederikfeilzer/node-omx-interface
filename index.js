@@ -3,8 +3,10 @@ var path = require('path');
 
 exec('mkfifo omxpipe');
 
+var defaults;
+
 function setDefault ()	{
-	var defaults = {
+	defaults = {
 		path:{
 			value:'',
 			time:new Date(),
