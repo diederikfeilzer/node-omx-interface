@@ -386,7 +386,9 @@ var open = function (path, options) {
   exec(command+' '+args.join(' ')+' < omxpipe',function(error, stdout, stderr) {
 		update_duration();
 		console.log('omxpipe done');
-		checkProgressHandler();
+		setTimeout( function() {
+			checkProgressHandler();
+		}, 1000);
   	console.log(stdout);
   });
   exec(' . > omxpipe');
