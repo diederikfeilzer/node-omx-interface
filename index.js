@@ -43,6 +43,9 @@ dbus = "bash "+__dirname+"/dbus.sh ";
 
 var playTryCount = 0;
 var play = function() {
+	if (progressHandler) {
+		clearInterval(progressHandler);
+	}
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
 		if(error && (playTryCount < 3)){
 			playTryCount++;
