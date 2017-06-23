@@ -3,7 +3,7 @@ var path = require('path');
 
 exec('mkfifo omxpipe');
 
-var defaults;
+var defaults, progressHandler;
 
 function setDefault ()	{
 	defaults = {
@@ -23,7 +23,7 @@ function setDefault ()	{
 			valid:false
 		},
 		volume:{
-			value:0,
+			value:1.0,
 			time:new Date(),
 			valid:false
 		},
@@ -33,16 +33,24 @@ function setDefault ()	{
 			valid:false
 		}
 	};
-		
-	return defaults;	
+
+	return defaults;
 }
 
 var cache = setDefault();
 
 dbus = "bash "+__dirname+"/dbus.sh ";
 
+function checkProgressHandler() {
+	if (progressHandler) {
+		clearInterval(progressHandler);
+		console.log('progressHandler cancelled');
+	}
+}
+
 var playTryCount = 0;
 var play = function() {
+	checkProgressHandler();
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
 		if(error && (playTryCount < 3)){
 			playTryCount++;
@@ -94,10 +102,12 @@ var stop = function() {
 			cache = defaults;
 		}
 	});
+	checkProgressHandler();
 }
 
 var quitTryCount = 0;
 var quit = function() {
+	checkProgressHandler();
 	exec(dbus + 'quit',function(error, stdout, stderr) {
 		if(error && (quitTryCount < 3)){
 			quitTryCount++;
@@ -303,7 +313,8 @@ var getCurrentVolume = function(){
 }
 
 var onProgress = function(callback){
-	setInterval(function(){
+	console.log('add new progress handler')
+	progressHandler = setInterval(function(){
 		if(getCurrentStatus()){
 			callback({position:getCurrentPosition(), duration:getCurrentDuration()});
 		}
@@ -373,6 +384,11 @@ var open = function (path, options) {
 	args.push('org.mpris.MediaPlayer2.omxplayer');
 
   exec(command+' '+args.join(' ')+' < omxpipe',function(error, stdout, stderr) {
+		update_duration();
+		console.log('omxpipe done');
+		setTimeout( function() {
+			checkProgressHandler();
+		}, 1000);
   	console.log(stdout);
   });
   exec(' . > omxpipe');
@@ -414,7 +430,7 @@ var init_remote = function(options){
 	app.get('/',function(req, res){
 		res.sendFile(__dirname+'/remote.html');
 	});
-	
+
 	app.get('/theme.css',function(req, res){
 		res.sendFile(__dirname+'/theme.css');
 	});
@@ -458,9 +474,9 @@ var init_remote = function(options){
 
 				}
 			});
-			
+
 			data = data.sort(function(a,b) {return (a.Name > b.Name) ? 1 : ((b.Name > a.Name) ? -1 : 0);} );
-			
+
 			res.json(data);
 		});
 	});
