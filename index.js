@@ -23,7 +23,7 @@ function setDefault ()	{
 			valid:false
 		},
 		volume:{
-			value:0,
+			value:1.0,
 			time:new Date(),
 			valid:false
 		},
@@ -101,6 +101,9 @@ var stop = function() {
 
 var quitTryCount = 0;
 var quit = function() {
+	if (progressHandler) {
+		clearInterval(progressHandler);
+	}
 	exec(dbus + 'quit',function(error, stdout, stderr) {
 		if(error && (quitTryCount < 3)){
 			quitTryCount++;
