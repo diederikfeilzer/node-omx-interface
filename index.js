@@ -384,6 +384,8 @@ var open = function (path, options) {
 	args.push('org.mpris.MediaPlayer2.omxplayer');
 
   exec(command+' '+args.join(' ')+' < omxpipe',function(error, stdout, stderr) {
+		console.log('omxpipe done');
+		checkProgressHandler();
   	console.log(stdout);
   });
   exec(' . > omxpipe');
