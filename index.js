@@ -3,7 +3,7 @@ var path = require('path');
 
 exec('mkfifo omxpipe');
 
-var defaults;
+var defaults, progressHandler;
 
 function setDefault ()	{
 	defaults = {
@@ -33,8 +33,8 @@ function setDefault ()	{
 			valid:false
 		}
 	};
-		
-	return defaults;	
+
+	return defaults;
 }
 
 var cache = setDefault();
@@ -94,6 +94,9 @@ var stop = function() {
 			cache = defaults;
 		}
 	});
+	if (progressHandler) {
+		clearInterval(progressHandler);
+	}
 }
 
 var quitTryCount = 0;
@@ -303,7 +306,7 @@ var getCurrentVolume = function(){
 }
 
 var onProgress = function(callback){
-	setInterval(function(){
+	progressHandler = setInterval(function(){
 		if(getCurrentStatus()){
 			callback({position:getCurrentPosition(), duration:getCurrentDuration()});
 		}
@@ -414,7 +417,7 @@ var init_remote = function(options){
 	app.get('/',function(req, res){
 		res.sendFile(__dirname+'/remote.html');
 	});
-	
+
 	app.get('/theme.css',function(req, res){
 		res.sendFile(__dirname+'/theme.css');
 	});
@@ -458,9 +461,9 @@ var init_remote = function(options){
 
 				}
 			});
-			
+
 			data = data.sort(function(a,b) {return (a.Name > b.Name) ? 1 : ((b.Name > a.Name) ? -1 : 0);} );
-			
+
 			res.json(data);
 		});
 	});
