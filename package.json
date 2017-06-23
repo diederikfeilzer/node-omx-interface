@@ -1,6 +1,6 @@
 {
   "name": "omx-interface",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "An interface for omxplayer through dbus",
   "main": "index.js",
   "scripts": {
