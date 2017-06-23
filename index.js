@@ -41,11 +41,16 @@ var cache = setDefault();
 
 dbus = "bash "+__dirname+"/dbus.sh ";
 
-var playTryCount = 0;
-var play = function() {
+function checkProgressHandler() {
 	if (progressHandler) {
 		clearInterval(progressHandler);
+		console.log('progressHandler cancelled');
 	}
+}
+
+var playTryCount = 0;
+var play = function() {
+	checkProgressHandler();
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
 		if(error && (playTryCount < 3)){
 			playTryCount++;
@@ -97,16 +102,12 @@ var stop = function() {
 			cache = defaults;
 		}
 	});
-	if (progressHandler) {
-		clearInterval(progressHandler);
-	}
+	checkProgressHandler();
 }
 
 var quitTryCount = 0;
 var quit = function() {
-	if (progressHandler) {
-		clearInterval(progressHandler);
-	}
+	checkProgressHandler();
 	exec(dbus + 'quit',function(error, stdout, stderr) {
 		if(error && (quitTryCount < 3)){
 			quitTryCount++;
@@ -312,11 +313,14 @@ var getCurrentVolume = function(){
 }
 
 var onProgress = function(callback){
-	progressHandler = setInterval(function(){
-		if(getCurrentStatus()){
-			callback({position:getCurrentPosition(), duration:getCurrentDuration()});
-		}
-	},1000);
+	if (!progressHandler) {
+		console.log('add new progress handler');
+		progressHandler = setInterval(function(){
+			if(getCurrentStatus()){
+				callback({position:getCurrentPosition(), duration:getCurrentDuration()});
+			}
+		},1000);
+	}
 }
 
 /*
