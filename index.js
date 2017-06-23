@@ -313,14 +313,12 @@ var getCurrentVolume = function(){
 }
 
 var onProgress = function(callback){
-	if (!progressHandler) {
-		console.log('add new progress handler');
-		progressHandler = setInterval(function(){
-			if(getCurrentStatus()){
-				callback({position:getCurrentPosition(), duration:getCurrentDuration()});
-			}
-		},1000);
-	}
+	console.log('add new progress handler')
+	progressHandler = setInterval(function(){
+		if(getCurrentStatus()){
+			callback({position:getCurrentPosition(), duration:getCurrentDuration()});
+		}
+	},1000);
 }
 
 /*
