@@ -82,6 +82,15 @@ showsubtitles)
   dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Action int32:31 >/dev/null
   ;;
 
+hidevideo)
+  dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Action int32:28 >/dev/null
+  ;;
+
+unhidevideo)
+  dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Action int32:29 >/dev/null
+  ;;
+
+
 *)
   echo "error"
   exit 1

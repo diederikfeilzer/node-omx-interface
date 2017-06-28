@@ -232,6 +232,13 @@ var showSubtitles = function() {
   });
 }
 
+var setVisibility = function(visible) {
+	var command = visible ? 'unhidevideo' : 'hidevideo';
+	exec(dbus + command, function(err, stdout, stderr) {
+		console.log('result of setVisible:', command, ': error?', error);
+	});
+}
+
 var update_position = function() {
 	exec(dbus + 'getposition',function(error, stdout, stderr) {
 		if (error) return false;
