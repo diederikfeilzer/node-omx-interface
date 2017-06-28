@@ -127,8 +127,8 @@ var quit = function() {
 
 var togglePlayTryCount = 0;
 var togglePlay = function() {
-	exec(dbus + 'playpause',function(error, stdout, stderr) {
-		console.log('playpause; error:', error);
+	exec(dbus + 'toggleplay',function(error, stdout, stderr) {
+		console.log('toggleplay; error:', error);
 		if(error && (togglePlayTryCount < 4)){
 			togglePlayTryCount++;
 			togglePlay();
