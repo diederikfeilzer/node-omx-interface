@@ -241,7 +241,7 @@ var setVisibility = function(visible) {
 
 var setAlpha = function(alpha) {
 	exec(dbus + 'setalpha ' + alpha, function(err, stdout, stderr) {
-		console.log('result of setAlpha:', command, ': error?', err);
+		console.log('result of setAlpha; error?', err);
 	});
 }
 
