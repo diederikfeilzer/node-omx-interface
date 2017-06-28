@@ -74,6 +74,7 @@ var play = function() {
 var pauseTryCount = 0;
 var pause = function() {
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
+		console.log('dbus pause result: error, stdout, stderr:', error, stdout, stderr);
 		// console.log('dbus pause result: error, stdout, stderr:', error, stdout, stderr);
 		if(error && (stopTryCount < 3)){
 			pauseTryCount++;
