@@ -3,8 +3,6 @@ var path = require('path');
 
 exec('mkfifo omxpipe');
 
-console.log('this is a test version which should not be used in production');
-
 var defaults, progressHandler;
 
 function setDefault ()	{
