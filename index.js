@@ -74,8 +74,6 @@ var play = function() {
 var pauseTryCount = 0;
 var pause = function() {
 	exec(dbus + 'getplaystatus',function(error, stdout, stderr) {
-		console.log('dbus pause result: error, stdout, stderr:', error, stdout, stderr);
-		// console.log('dbus pause result: error, stdout, stderr:', error, stdout, stderr);
 		if(error && (stopTryCount < 3)){
 			pauseTryCount++;
 			pause();
@@ -128,7 +126,6 @@ var quit = function() {
 var togglePlayTryCount = 0;
 var togglePlay = function() {
 	exec(dbus + 'toggleplay',function(error, stdout, stderr) {
-		console.log('toggleplay; error:', error);
 		if(error && (togglePlayTryCount < 4)){
 			togglePlayTryCount++;
 			togglePlay();
