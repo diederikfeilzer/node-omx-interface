@@ -638,6 +638,7 @@ module.exports.setVolume = setVolume;
 module.exports.toggleSubtitles = toggleSubtitles;
 module.exports.hideSubtitles = hideSubtitles;
 module.exports.showSubtitles = showSubtitles;
+module.exports.setVisibility = setVisibility;
 module.exports.getCurrentPosition = getCurrentPosition;
 module.exports.getCurrentDuration = getCurrentDuration;
 module.exports.getCurrentVolume = getCurrentVolume;
