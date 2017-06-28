@@ -239,6 +239,12 @@ var setVisibility = function(visible) {
 	});
 }
 
+var setAlpha = function(alpha) {
+	exec(dbus + 'setalpha ' + alpha, function(err, stdout, stderr) {
+		console.log('result of setAlpha:', command, ': error?', err);
+	});
+}
+
 var update_position = function() {
 	exec(dbus + 'getposition',function(error, stdout, stderr) {
 		if (error) return false;
@@ -639,6 +645,7 @@ module.exports.toggleSubtitles = toggleSubtitles;
 module.exports.hideSubtitles = hideSubtitles;
 module.exports.showSubtitles = showSubtitles;
 module.exports.setVisibility = setVisibility;
+module.exports.setAlpha = setAlpha;
 module.exports.getCurrentPosition = getCurrentPosition;
 module.exports.getCurrentDuration = getCurrentDuration;
 module.exports.getCurrentVolume = getCurrentVolume;
