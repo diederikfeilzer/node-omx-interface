@@ -3,6 +3,8 @@ var path = require('path');
 
 exec('mkfifo omxpipe');
 
+console.log('this is a test version which should not be used in production');
+
 var defaults, progressHandler;
 
 function setDefault ()	{
@@ -72,6 +74,7 @@ var play = function() {
 var pauseTryCount = 0;
 var pause = function() {
 	exec(dbus + 'playstatus',function(error, stdout, stderr) {
+		console.log('dbus pause result: error, stdout, stderr:', error, stdout, stderr);
 		if(error && (stopTryCount < 3)){
 			pauseTryCount++;
 			pause();
