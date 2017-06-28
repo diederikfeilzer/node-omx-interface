@@ -51,7 +51,7 @@ function checkProgressHandler() {
 var playTryCount = 0;
 var play = function() {
 	checkProgressHandler();
-	exec(dbus + 'playstatus',function(error, stdout, stderr) {
+	exec(dbus + 'getplaystatus',function(error, stdout, stderr) {
 		if(error && (playTryCount < 3)){
 			playTryCount++;
 			play();
@@ -71,7 +71,7 @@ var play = function() {
 
 var pauseTryCount = 0;
 var pause = function() {
-	exec(dbus + 'playstatus',function(error, stdout, stderr) {
+	exec(dbus + 'getplaystatus',function(error, stdout, stderr) {
 		if(error && (stopTryCount < 3)){
 			pauseTryCount++;
 			pause();
@@ -123,7 +123,7 @@ var quit = function() {
 
 var togglePlayTryCount = 0;
 var togglePlay = function() {
-	exec(dbus + 'playpause',function(error, stdout, stderr) {
+	exec(dbus + 'toggleplay',function(error, stdout, stderr) {
 		if(error && (togglePlayTryCount < 4)){
 			togglePlayTryCount++;
 			togglePlay();
@@ -230,6 +230,19 @@ var showSubtitles = function() {
 			showSubtitlesTryCount = 0;
 		}
   });
+}
+
+var setVisibility = function(visible) {
+	var command = visible ? 'unhidevideo' : 'hidevideo';
+	exec(dbus + command, function(err, stdout, stderr) {
+		console.log('result of setVisible:', command, ': error?', err);
+	});
+}
+
+var setAlpha = function(alpha) {
+	exec(dbus + 'setalpha ' + alpha, function(err, stdout, stderr) {
+		console.log('result of setAlpha; error?', err);
+	});
 }
 
 var update_position = function() {
@@ -631,6 +644,8 @@ module.exports.setVolume = setVolume;
 module.exports.toggleSubtitles = toggleSubtitles;
 module.exports.hideSubtitles = hideSubtitles;
 module.exports.showSubtitles = showSubtitles;
+module.exports.setVisibility = setVisibility;
+module.exports.setAlpha = setAlpha;
 module.exports.getCurrentPosition = getCurrentPosition;
 module.exports.getCurrentDuration = getCurrentDuration;
 module.exports.getCurrentVolume = getCurrentVolume;
