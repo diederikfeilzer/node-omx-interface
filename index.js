@@ -41,16 +41,8 @@ var cache = setDefault();
 
 dbus = "bash "+__dirname+"/dbus.sh ";
 
-function checkProgressHandler() {
-	if (progressHandler) {
-		clearInterval(progressHandler);
-		console.log('progressHandler cancelled');
-	}
-}
-
 var playTryCount = 0;
 var play = function() {
-	checkProgressHandler();
 	exec(dbus + 'getplaystatus',function(error, stdout, stderr) {
 		if(error && (playTryCount < 3)){
 			playTryCount++;
@@ -102,12 +94,11 @@ var stop = function() {
 			cache = defaults;
 		}
 	});
-	checkProgressHandler();
+	stopProgressHandler();
 }
 
 var quitTryCount = 0;
 var quit = function() {
-	checkProgressHandler();
 	exec(dbus + 'quit',function(error, stdout, stderr) {
 		if(error && (quitTryCount < 3)){
 			quitTryCount++;
@@ -118,7 +109,8 @@ var quit = function() {
 			quitTryCount = 0;
 			cache = defaults;
 		}
-  });
+  	});
+  	stopProgressHandler();
 }
 
 var togglePlayTryCount = 0;
@@ -235,13 +227,13 @@ var showSubtitles = function() {
 var setVisibility = function(visible) {
 	var command = visible ? 'unhidevideo' : 'hidevideo';
 	exec(dbus + command, function(err, stdout, stderr) {
-		console.log('result of setVisible:', command, ': error?', err);
+		//console.log('result of setVisible:', command, ': error?', err);
 	});
 }
 
 var setAlpha = function(alpha) {
 	exec(dbus + 'setalpha ' + alpha, function(err, stdout, stderr) {
-		console.log('result of setAlpha; error?', err);
+		//console.log('result of setAlpha; error?', err);
 	});
 }
 
@@ -325,12 +317,29 @@ var getCurrentVolume = function(){
 	return cache.volume.value;
 }
 
+// Progress Event
+
+var progressCallback = function(stat){}
+
+var progress = function(){
+	if(getCurrentStatus()){
+		progressCallback({position:getCurrentPosition(), duration:getCurrentDuration()});
+	}
+}
+
+function stopProgressHandler(){
+	if (progressHandler) {
+		clearInterval(progressHandler);
+	}
+	progressCallback = function(stat){}
+}
+
 var onProgress = function(callback){
-	console.log('add new progress handler')
+	
+	progressCallback = callback
+
 	progressHandler = setInterval(function(){
-		if(getCurrentStatus()){
-			callback({position:getCurrentPosition(), duration:getCurrentDuration()});
-		}
+		progress()
 	},1000);
 }
 
@@ -398,11 +407,6 @@ var open = function (path, options) {
 
   exec(command+' '+args.join(' ')+' < omxpipe',function(error, stdout, stderr) {
 		update_duration();
-		console.log('omxpipe done');
-		setTimeout( function() {
-			checkProgressHandler();
-		}, 1000);
-  	console.log(stdout);
   });
   exec(' . > omxpipe');
 
