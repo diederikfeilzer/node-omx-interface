@@ -392,7 +392,10 @@ var open = function (path, options) {
 		args.push('--pos');
 		args.push(''+settings.startAt+'');
 	}
-
+	if (settings.layer){
+		args.push('--layer');
+		args.push(settings.layer);
+	}
 	args.push('--dbus_name');
 	args.push('org.mpris.MediaPlayer2.omxplayer');
 
